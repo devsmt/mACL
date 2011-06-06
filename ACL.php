@@ -32,17 +32,16 @@ class ACL {
         if (!is_string($user_id) || empty($user_id)) {
             die("non puoi chiamre ACL::userIsAllowed per uno user vuoto:" . var_dump($resource_id));
         }
-        // se non è chiaro a cosa si sta accedendo, si sta richiedendo accesso con pieni poteri
+        // if it is not specified what to access, assume accessing all
         if (!is_string($action)) {
             $action = '*';
         }
         if (isset($ACL[$user_id])) {
             if ($ACL[$user_id] === '*' || in_array('*', $ACL[$user_id])) {
-                // è superadmin, accede a qualsiasi risorsa
+                // superadmin can access all resources
                 $allowed = true;
             } elseif (isset($ACL[$user_id][$resource_id])) {
-                // nessuna particolare azione, l'utente è abilitato di default
-                // l'utente ha tutti i permessi su tutta la risorsa, l'utente è abilitato
+
                 if (isset($ACL[$user_id][$resource_id]['*'])) {
                     $allowed = true;
                 } else {
@@ -89,7 +88,7 @@ class ACL {
     }
 }
 /*
-   the simplest, but general enought, data storage possible
+   the simplest, but general enough, data storage possible
 */
 class ACL_starage_array implements ArrayAccess {
     private $data = array();
