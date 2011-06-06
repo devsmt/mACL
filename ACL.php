@@ -17,20 +17,18 @@ class ACL {
         return $allowed;
     }
     /*
-    determina se, l'utente selezionato ha permessi per la risorsa+azione secondo 
-    i dati contenuti nella lista $ACL
-    $resource_id può essere qualunque cosa, controllers, tabelle, files
+    $resource_id can be anything, controllers, tabelle, files
     */
     public static function userIsAllowed(ArrayAccess $ACL, $user_id, $resource_id, $action = '*') {
         $allowed = false;
         if ($user_id === '__groups__') {
-            die("non puoi chiamre ACL::userIsAllowed di un utente con id '__groups__'! ");
+            die("ACL::userIsAllowed for user name '__groups__'! ");
         }
         if (!is_string($resource_id) || empty($resource_id)) {
-            die("non puoi chiamre ACL::userIsAllowed per una risorsa vuota:" . var_dump($resource_id));
+            die("ACL::userIsAllowed called for empty resource:" . var_dump($resource_id));
         }
         if (!is_string($user_id) || empty($user_id)) {
-            die("non puoi chiamre ACL::userIsAllowed per uno user vuoto:" . var_dump($resource_id));
+            die("ACL::userIsAllowed called with empty user:" . var_dump($resource_id));
         }
         // if it is not specified what to access, assume accessing all
         if (!is_string($action)) {
@@ -76,7 +74,11 @@ class ACL {
             } elseif (isset($GACL[$role][$resource_id])) {
                 // if is admin, and than has all privileges over the resource
                 // or har the specific right
-                if ($GACL[$role][$resource_id] == '*' || in_array('*', $GACL[$role][$resource_id]) || in_array($action, $GACL[$role][$resource_id])) {
+                $_is_admin = $GACL[$role][$resource_id] == '*';
+                $_is_admin_a = in_array('*', $GACL[$role][$resource_id]);
+                $_has_perm = in_array($action, $GACL[$role][$resource_id]);
+                
+                if ( $_is_admin || $_is_admin_a || $_has_perm) {
                     $allowed = true;
                 } else {
                     $allowed = false;
